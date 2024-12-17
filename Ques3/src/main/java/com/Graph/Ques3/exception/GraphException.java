@@ -22,6 +22,4 @@ public class GraphException extends RuntimeException {
             super(message);
         }
     }
-
-    // Add more custom exceptions as needed
 }

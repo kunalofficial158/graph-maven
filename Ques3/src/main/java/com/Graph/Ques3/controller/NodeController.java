@@ -50,7 +50,7 @@ public class NodeController {
     }
 
     @GetMapping("/path")
-    public List<Node> findPath(@RequestParam String startNodeId, @RequestParam String endNodeId) {
+    public List<String> findPath(@RequestParam String startNodeId, @RequestParam String endNodeId) {
         return graphService.findPath(startNodeId, endNodeId);
     }
 

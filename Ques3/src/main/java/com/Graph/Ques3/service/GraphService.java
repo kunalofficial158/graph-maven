@@ -108,45 +108,42 @@ public class GraphService {
             Node parent = getNode(node.getParentId());
             parent.getChildren().remove(node);  // Remove from parent's children list
         }
-        // Optionally: Handle removal of children if needed
     }
 
-    // Find a path from a start node to an end node (Breadth-First Search)
-    public List<Node> findPath(String startNodeId, String endNodeId) {
-        List<Node> path = new ArrayList<>();
+
+    public List<String> findPath(String startNodeId, String endNodeId) {
+        List<String> path = new ArrayList<>();
         if (!nodes.containsKey(startNodeId) || !nodes.containsKey(endNodeId)) {
             return path;
         }
 
-        Map<String, String> parentMap = new HashMap<>();
-        Queue<String> queue = new LinkedList<>();
-        queue.add(startNodeId);
-        parentMap.put(startNodeId, null); // Starting node has no parent
+        Queue<List<String>> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        queue.add(Collections.singletonList(startNodeId));
+        visited.add(startNodeId);
 
         while (!queue.isEmpty()) {
-            String currentNodeId = queue.poll();
-            Node currentNode = getNode(currentNodeId);
+            List<String> currentPath = queue.poll();
+            String lastNodeId = currentPath.get(currentPath.size() - 1);
 
-            if (currentNodeId.equals(endNodeId)) {
-                // Path found, reconstruct the path
-                while (currentNodeId != null) {
-                    Node node = getNode(currentNodeId);
-                    path.add(0, new Node(currentNodeId, node.getName(), node.getParentId(), new ArrayList<>())); // Adding node to path
-                    currentNodeId = parentMap.get(currentNodeId);
-                }
-                return path;
+            if (lastNodeId.equals(endNodeId)) {
+                return currentPath;
             }
 
-            for (Node child : currentNode.getChildren()) {
-                if (!parentMap.containsKey(child.getId())) {
-                    queue.add(child.getId());
-                    parentMap.put(child.getId(), currentNodeId);
+            Node lastNode = getNode(lastNodeId);
+            for (Node child : lastNode.getChildren()) {
+                if (!visited.contains(child.getId())) {
+                    visited.add(child.getId());
+                    List<String> newPath = new ArrayList<>(currentPath);
+                    newPath.add(child.getId());
+                    queue.add(newPath);
                 }
             }
         }
 
-        return path; // No path found
+        return path;
     }
+
 
     // Calculate the depth of a node in the graph
     public int calculateDepth(String id) {
